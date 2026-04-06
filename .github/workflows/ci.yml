@@ -16,3 +16,4 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby-version }}
       - run: ruby -Ilib:test test/http_retry_policy_test.rb
+      - run: ruby -Ilib:test test/client_contract_test.rb
