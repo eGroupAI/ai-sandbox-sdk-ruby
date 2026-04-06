@@ -3,6 +3,7 @@
 require "json"
 require "net/http"
 require "uri"
+require_relative "http_retry_policy"
 
 module AiSandboxSdk
   class Client
@@ -63,13 +64,16 @@ module AiSandboxSdk
           http.request(req)
         end
 
-        if [429, 500, 502, 503, 504].include?(response.code.to_i) && attempt < @max_retries
+        if HttpRetryPolicy.should_retry_transient_http?(method, response.code.to_i) && attempt < @max_retries
           attempt += 1
           sleep(0.2 * attempt)
           next
         end
 
-        raise ApiError.new(response.code.to_i, response.body) if response.code.to_i >= 400
+        if response.code.to_i >= 400
+          trace = response["x-trace-id"]
+          raise ApiError.new(response.code.to_i, response.body, trace)
+        end
         return response
       end
     end
