@@ -66,7 +66,8 @@ gem install ai-sandbox-sdk-ruby
 | --- | --- |
 | API Coverage | 11 operations (Agent / Chat / Knowledge Base) |
 | Stream Mode | `text/event-stream` with `[DONE]` handling |
-| Error Surface | `ApiError` with status/body |
+| Retry Safety | 429/5xx auto-retry for GET/HEAD + capped exponential backoff |
+| Error Surface | `ApiError` with status/body/trace_id |
 | Validation | Production-host integration verified |
 
 ## Links

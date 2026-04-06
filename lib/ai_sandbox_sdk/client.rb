@@ -2,6 +2,8 @@
 
 require "json"
 require "net/http"
+require "socket"
+require "timeout"
 require "uri"
 require_relative "http_retry_policy"
 
@@ -29,13 +31,18 @@ module AiSandboxSdk
     def send_chat_stream(agent_id, payload)
       response = request("POST", "/agents/#{agent_id}/chat", payload, "text/event-stream")
       chunks = []
+      done = false
       response.read_body do |part|
         part.each_line do |line|
           next unless line.start_with?("data: ")
           data = line.delete_prefix("data: ").strip
-          break if data == "[DONE]"
+          if data == "[DONE]"
+            done = true
+            break
+          end
           chunks << data
         end
+        break if done
       end
       chunks
     end
@@ -60,13 +67,22 @@ module AiSandboxSdk
           req.body = JSON.generate(payload)
         end
 
-        response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https", read_timeout: @timeout_seconds) do |http|
-          http.request(req)
+        begin
+          response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == "https", read_timeout: @timeout_seconds) do |http|
+            http.request(req)
+          end
+        rescue Timeout::Error, Errno::ECONNRESET, Errno::ETIMEDOUT, SocketError, EOFError, IOError => e
+          if attempt < @max_retries
+            attempt += 1
+            sleep(HttpRetryPolicy.retry_delay_seconds(attempt))
+            next
+          end
+          raise RuntimeError, "Network error: #{e.message}"
         end
 
         if HttpRetryPolicy.should_retry_transient_http?(method, response.code.to_i) && attempt < @max_retries
           attempt += 1
-          sleep(0.2 * attempt)
+          sleep(HttpRetryPolicy.retry_delay_seconds(attempt))
           next
         end
 
