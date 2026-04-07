@@ -60,6 +60,12 @@ chunks.each { |chunk| puts chunk }
 gem install ai-sandbox-sdk-ruby
 ```
 
+## Integration Sanity Checklist
+
+- Keep `AI_SANDBOX_API_KEY` in secure runtime configuration.
+- Confirm `AI_SANDBOX_BASE_URL` points to the intended environment.
+- Verify `[DONE]` handling in stream consumers before release.
+
 ## Snapshot
 
 | Metric | Value |
@@ -73,6 +79,7 @@ gem install ai-sandbox-sdk-ruby
 ## Links
 
 - [Official System Integration Docs](https://www.egroupai.com/ai-sandbox/system-integration)
+- [Public Capability Showcase](https://github.com/a6091731/ai-sandbox-public-showcase)
 - [30-Day Optimization Plan](docs/30D_OPTIMIZATION_PLAN.md)
 - [Integration Guide](docs/INTEGRATION.md)
 - [Quickstart Example](examples/quickstart.rb)
