@@ -75,6 +75,7 @@ gem install ai-sandbox-sdk-ruby
 | Retry Safety | 429/5xx auto-retry for GET/HEAD + capped exponential backoff |
 | Error Surface | `ApiError` with status/body/trace_id |
 | Validation | Production-host integration verified |
+| Release Readiness | Run `draft-release-train` and `guards` checks before merge |
 
 ## Links
 
