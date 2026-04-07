@@ -77,3 +77,7 @@ gem install ai-sandbox-sdk-ruby
 - [Integration Guide](docs/INTEGRATION.md)
 - [Quickstart Example](examples/quickstart.rb)
 - [Repository](https://github.com/eGroupAI/ai-sandbox-sdk-ruby)
+
+## License
+
+This SDK is released under the Apache-2.0 license.
